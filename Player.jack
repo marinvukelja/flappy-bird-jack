@@ -1,0 +1,140 @@
+
+class Player {
+   field int xPos;
+   field int yPos;
+   field int yVel;
+   field int position;
+   field int prevPosition;
+   field int tick; // internal clock
+   field boolean gravity; 
+   field boolean animation_direction_up;
+
+   constructor Player new(int x, int y) {
+      let xPos = (x*16);
+      let yPos = y;
+      let yVel = 0;
+      let position = (x+(32*yPos));
+      let prevPosition = 0;
+      let tick = 0;
+      let gravity = false;
+      return this;
+   }
+   //screen 512x256, 32 mem lokacije po redu,1 mem lokacija = 16(bitova)
+   //memAddress + 0: Data for the first row
+   //memAddress + 32: Data for the second row
+   //The memory is written over 16 increments (from memAddress + 0 to memAddress + 480)
+   //Grafički podaci lika počinju na adresi 16384 + lokacija
+   
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+   
+   method void render() {
+      do draw_character(position, prevPosition);
+	  return;
+   }
+
+	method void draw_character(int location, int prevLocation){
+		var int memAddress;
+      var int prevMemAddress;
+      var int finalMemAddress;
+      
+	  
+	  //prije nego sto sam ga ponovo nacrto, obrisao character, sve postavio na 0
+      let prevMemAddress = 16384 + prevLocation;
+      let finalMemAddress = prevMemAddress + 481; //+480 jos treba, zato +481
+	  let memAddress = 16384 + location;
+	  while (prevMemAddress < finalMemAddress) {
+      do Memory.poke(prevMemAddress, 0); //brisanje charactera
+      let prevMemAddress = prevMemAddress + 32;
+      }
+
+      let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 448);
+		do Memory.poke(memAddress + 64, 544);
+		do Memory.poke(memAddress + 96, 544);
+		do Memory.poke(memAddress + 128, 448);
+		do Memory.poke(memAddress + 160, 128);
+		do Memory.poke(memAddress + 192, 128);
+		do Memory.poke(memAddress + 224, 448);
+		do Memory.poke(memAddress + 256, 672);
+		do Memory.poke(memAddress + 288, 128);
+		do Memory.poke(memAddress + 320, 128);
+		do Memory.poke(memAddress + 352, 320);
+		do Memory.poke(memAddress + 384, 544);
+		do Memory.poke(memAddress + 416, 1040);
+		do Memory.poke(memAddress + 448, 0);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+	
+   method void jump() {
+      let yVel = -4;
+      if (~gravity) {
+         let gravity = true;
+      }
+      return;
+   }
+
+
+   method void tick() {
+      // update gravity every 5 ticks
+      let tick = tick + 1;
+      if (tick = 5) {
+         let tick = 0;
+     
+         if (yVel < 6) {
+            let yVel = yVel + 1;	//sto duze pada pocinje brze padati
+         }
+       
+      }
+      // apply gravity to position (if on)
+	  // kad je yVel<0 ide gore, kad je veci ide dole
+      if (gravity) {
+         if (yVel > 0) {
+            if (yPos < (220-yVel)) { //uvjet donji dio screena 
+                  let yPos = yPos + yVel;
+                  let prevPosition = position;
+                  let position = position + (yVel*32);//yVel*32 pomice se po redovima gore dole;
+            }
+         } else {
+            if (yPos > -yVel) { //uvjet gornji dio screena
+               let yPos = yPos + yVel;
+               let prevPosition = position;
+               let position = position + (yVel*32);
+            } else {
+               let yVel = 0; 
+            }
+         }
+      
+      }
+      return;
+   }
+
+   method void update() {
+      do tick();
+	   do render();
+      return;
+   }
+
+   method int x() {
+      return xPos;
+   }
+
+   method int y() {
+      return yPos;
+   }
+
+   method void reset(int x, int y) {
+      let xPos = (x*16);
+      let yPos = y;
+      let yVel = 0;
+      let position = (x+(32*yPos));
+      let prevPosition = 0;
+      let tick = 0;
+      let gravity = false;
+      return;
+   }
+}

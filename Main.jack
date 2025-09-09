@@ -1,0 +1,20 @@
+
+class Main {
+    function void main() {
+        var Game game;
+        var boolean run;
+        let game = Game.new();
+        let run = true;
+        while (run) {
+        	let run = game.run();
+        }
+        do game.dispose();
+        return;
+    }
+}
+
+// nakon 10 prikazati pobjedu
+// na pocetku odabir tezine, lagano ili tesko
+// uvijek ispisati tezinu i score
+// neki novi objekt/prepreka
+// kod sudara game over

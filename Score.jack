@@ -1,0 +1,46 @@
+class Score {
+    field int score;
+    field String difficultyText;
+    field String scoreText;
+
+    constructor Score new(boolean is_hard_difficulty) {      
+        let score = 0;
+        if (is_hard_difficulty){
+            let difficultyText = "Difficulty: Hard";
+        }
+        else {
+            let difficultyText = "Difficulty: Easy";
+        }
+        let scoreText = "Score:";
+        return this;
+   }
+
+    method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+    }
+
+    method void increment() {
+        let score = score + 1;
+        return;
+    }
+
+    method void display() {
+        do Output.moveCursor(0, 1);
+        do Output.printString(difficultyText);
+        do Output.moveCursor(1, 1);
+        do Output.printString(scoreText);
+        do Output.moveCursor(1, 8);
+        do Output.printInt(score);
+        return;
+    }
+
+    method int getCurrent() {
+        return score;
+    }
+
+    method void reset() {
+        let score = 0;
+        return;
+    }
+}
