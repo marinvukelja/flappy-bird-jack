@@ -1,0 +1,13 @@
+# OS cruft
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Nand2Tetris outputs
+*.vm
+*.out
+*.cmp
+*.asm
+*.hack
